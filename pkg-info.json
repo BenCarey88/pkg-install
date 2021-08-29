@@ -1,0 +1,6 @@
+{
+    "owner": "Ben Carey",
+    "name": "pkg-install",
+    "version": "1.0.0",
+    "dependencies": ["six"]
+}
