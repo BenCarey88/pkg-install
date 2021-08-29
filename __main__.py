@@ -19,12 +19,7 @@ def get_args():
         nargs="?",
         type=str,
         default=os.getcwd(),
-        help="source directory for package",
-    )
-    parser.add_argument(
-        "-s",
-        action="store_true",
-        help="whether or not to install as a script or as a package",
+        help="source directory for package. If omitted, use current directory",
     )
     args = parser.parse_args()
     return args
@@ -57,8 +52,6 @@ def main():
     src_dir = args.src_dir
     pkgs_dir = os.path.join(os.sep, "PythonPath", "my-pkgs")
 
-    print (args.s)
-
     pkg_info_file = os.path.join(src_dir, "pkg-info.json")
     if not os.path.isfile(pkg_info_file):
         print (
@@ -68,7 +61,14 @@ def main():
         return
 
     with open(pkg_info_file) as file_:
-        pkg_info = json.load(file_)
+        try:
+            pkg_info = json.load(file_)
+        except json.decoder.JSONDecodeError:
+            print (
+                "[ERROR] The pkg-info file is incorrectly formatted:"
+                "\n\n\t{0}".format(pkg_info_file)
+            )
+            return
 
     pkg_name = pkg_info.get("name")
     if not pkg_name:
