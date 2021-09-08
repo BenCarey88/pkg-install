@@ -21,6 +21,16 @@ def get_args():
         default=os.getcwd(),
         help="source directory for package. If omitted, use current directory",
     )
+    parser.add_argument(
+        "-f",
+        action="store_true",
+        help="force install (don't ask for confirmation if overwriting)",
+    )
+    parser.add_argument(
+        "-d",
+        action="store_true",
+        help="install to develop mode",
+    )
     args = parser.parse_args()
     return args
 
@@ -49,8 +59,20 @@ def prompt_user_confirmation(
 def main():
     """Install package based on commandline args."""
     args = get_args()
-    src_dir = args.src_dir
-    pkgs_dir = os.path.join(os.sep, "PythonPath", "my-pkgs")
+    if args.d:
+        pkgs_dir = os.path.join(os.sep, "PythonPath", "dev-pkgs")
+        success_message = "Dev Package Installed Successfully"
+    else:
+        pkgs_dir = os.path.join(os.sep, "PythonPath", "my-pkgs")
+        success_message = "Package Installed Successfully"
+    src_dir = os.path.abspath(args.src_dir)
+    if not os.path.isdir(src_dir):
+        print (
+            "[ERROR] The given directory\n\n\t{0}\n\ndoes not exist".format(
+                src_dir
+            )
+        )
+        return
 
     pkg_info_file = os.path.join(src_dir, "pkg-info.json")
     if not os.path.isfile(pkg_info_file):
@@ -81,8 +103,11 @@ def main():
     
     dest_dir = os.path.join(pkgs_dir, pkg_name)
     if os.path.isdir(dest_dir):
-        continue_install = prompt_user_confirmation(
-            "{0} package already exists. Overwrite? [Y|n]".format(pkg_name),
+        continue_install = args.f or prompt_user_confirmation(
+            "{0}{1} package already exists. Overwrite? [Y|n]".format(
+                pkg_name,
+                " dev" if args.d else ""
+            ),
             confirmation_chars=['y', ''],
             accepted_chars=['y', 'n', ''],
         )
@@ -102,7 +127,7 @@ def main():
         )
     )
 
-    print ("Package installed successfully")
+    print (success_message)
 
 
 if __name__ == "__main__":
