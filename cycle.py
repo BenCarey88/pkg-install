@@ -42,13 +42,16 @@ def main(args):
         args (argparse.Namespace): arguments from commandline.
     """
     if not args.d:
-        utils.prompt_user_confirmation(
+        keep_going = utils.prompt_user_confirmation(
             "[WARNING]: using pkg cycle outside of develop mode. "
             "Please ensure you are not overwriting a version. "
             "Would you like to continue? [y|N]",
             confirmation_chars=['y'],
             accepted_chars=['y', 'n', '']
         )
+        if not keep_going:
+            print ("Aborting.")
+            return
 
     src_dir = os.path.abspath(os.getcwd())
     pkg_info_file, pkg_info = utils.get_package_info(src_dir)
