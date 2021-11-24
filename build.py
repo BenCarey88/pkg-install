@@ -3,10 +3,8 @@
 from datetime import datetime
 import json
 import os
-import shutil
-import yaml
 
-from pkg import constants, utils
+from pkg import build, constants, install, utils
 
 
 def add_subparser_command(subparser):
@@ -16,8 +14,8 @@ def add_subparser_command(subparser):
         subparser (argparse.Parser): argparse object.
     """
     build_command = subparser.add_parser(
-        constants.BUILD,
-        help="build a package",
+        constants.CYCLE,
+        help="build and install a package",
     )
 
     build_command.add_argument(
@@ -39,13 +37,46 @@ def add_subparser_command(subparser):
     )
 
 
-def main(args):
-    """Build package based on commandline args.
+def get_build_version(pkg_info, pkg_info_file, dev_mode):
+    """Get version to build, if none specified on commandline.
 
     Args:
-        args (argparse.Namespace): arguments from commandline.
+        pkg_info (dict): pkg-info dictionary.
+        pkg_info_file (str): path to pkg-info file.
+        dev_mode (bool): whether or not we're building to dev builds directory.
+
+    Returns:
+        (str or None): version to build, if found.
     """
-    if args.d:
+    if dev_mode:
+        version = constants.DEFAULT_DEV_VERSION
+        print ("Building version dev-0.0.0 (default dev version)")
+    else:
+        version = pkg_info.get(constants.VERSION_KEY)
+        if not version:
+            utils.print_error(
+                "No version given and pkg-info file has no version:\n\n\t{0}",
+                pkg_info_file,
+            )
+            return None
+        print (
+            "Building version {0} (specified in pkg-info file)".format(version)
+        )
+    return version
+
+
+def run_build(version, dev_mode, force):
+    """Run build action.
+
+    Args:
+        version (str or None): version to build. If None, use pkg-info.
+        dev_mode (bool): whether or not to build in dev-builds directory.
+        force (bool): if True, don't ask for confirmation when rewriting.
+
+    Returns:
+        (bool): if build was successful.
+    """
+    if dev_mode:
         build_dir = constants.DEV_PKG_BUILDS_DIR
         success_message = "Dev Package Built Successfully"
     else:
@@ -55,7 +86,7 @@ def main(args):
     src_dir = os.path.abspath(os.getcwd())
     pkg_info_file, pkg_info = utils.get_package_info(src_dir)
     if not pkg_info:
-        return
+        return False
 
     pkg_name = pkg_info.get(constants.NAME_KEY)
     if not pkg_name:
@@ -63,26 +94,13 @@ def main(args):
             "The pkg-info file has no pkg name:\n\n\t{0}",
             pkg_info_file,
         )
-        return
+        return False
 
-    if args.version:
-        version = args.version
-    elif args.d:
-        version = constants.DEFAULT_DEV_VERSION
-        print ("Building version dev-0.0.0 (default dev version)")
-    else:
-        version = pkg_info.get(constants.VERSION_KEY)
-        print (
-            "Building version {0} (specified in pkg-info file)".format(version)
-        )
+    version = version or get_build_version(pkg_info, pkg_info_file, dev_mode)
     if not version:
-        utils.print_error(
-            "No version given and pkg-info file has no version set:\n\n\t{0}",
-            pkg_info_file,
-        )
-        return
+        return False
 
-    if not args.d:
+    if not dev_mode:
         if version != pkg_info.get(constants.VERSION_KEY):
             overwrite_version = utils.prompt_user_confirmation(
                 "Version given ({0}) doesn't match version in pkg-info ({1}) "
@@ -111,7 +129,7 @@ def main(args):
             )
             if not continue_build:
                 print ("Aborting.")
-                return
+                return False
 
     pkg_build_dir = os.path.join(build_dir, pkg_name)
     if not os.path.isdir(pkg_build_dir):
@@ -122,11 +140,11 @@ def main(args):
         dest_dir,
         pkg_name,
         pkg_info.get(constants.IGNORE_PATTERNS_KEY, []),
-        args.d,
-        args.f,
+        dev_mode,
+        force,
     )
     if not success:
-        return
+        return False
 
     dest_pkg_info = utils.get_package_info_file(dest_dir)
     pkg_info[constants.BUILD_TIME_KEY] = str(datetime.now().replace(microsecond=0))
@@ -135,3 +153,13 @@ def main(args):
         json.dump(pkg_info, file_, indent=4)
 
     print (success_message)
+    return True
+
+
+def main(args):
+    """Build and install package based on commandline args.
+
+    Args:
+        args (argparse.Namespace): arguments from commandline.
+    """
+    run_build(args.version, args.d, args.f)

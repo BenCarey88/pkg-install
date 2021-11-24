@@ -41,13 +41,16 @@ def add_subparser_command(subparser):
     )
 
 
-def main(args):
-    """Install package based on commandline args.
+def run_install(pkg_name, version, dev_mode, force):
+    """Run build action.
 
     Args:
-        args (argparse.Namespace): arguments from commandline.
+        pkg_name (str): name of package to build.
+        version (str): version to build.
+        dev_mode (bool): whether or not to build in dev-builds directory.
+        force (bool): if True, don't ask for confirmation when rewriting.
     """
-    if args.d:
+    if dev_mode:
         build_dir = constants.DEV_PKG_BUILDS_DIR
         pkgs_dir = constants.DEV_PKGS_DIR
         success_message = "Dev Package Installed Successfully"
@@ -56,13 +59,11 @@ def main(args):
         pkgs_dir = constants.PKGS_DIR
         success_message = "Package Installed Successfully"
 
-    pkg_name = args.pkg_name
     pkg_build_dir = os.path.join(build_dir, pkg_name)
     if not os.path.isdir(pkg_build_dir):
         utils.print_error("Package {0} does not exits", pkg_name)
         return
 
-    version = args.version
     pkg_version_dir = os.path.join(pkg_build_dir, version)
     if not os.path.isdir(pkg_version_dir):
         utils.print_error(
@@ -87,8 +88,8 @@ def main(args):
         dest_dir,
         pkg_name,
         pkg_info.get(constants.IGNORE_PATTERNS_KEY, []),
-        args.d,
-        args.f,
+        dev_mode,
+        force,
     )
     if not success:
         return
@@ -99,3 +100,12 @@ def main(args):
         json.dump(pkg_info, file_, indent=4)
 
     print (success_message)
+
+
+def main(args):
+    """Install package based on commandline args.
+
+    Args:
+        args (argparse.Namespace): arguments from commandline.
+    """
+    run_install(args.pkg_name, args.version, args.d, args.f)

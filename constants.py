@@ -4,6 +4,7 @@ import os
 
 # commands
 BUILD = "build"
+CYCLE = "cycle"
 INSTALL = "install"
 LIST = "list"
 UNINSTALL = "uninstall"

@@ -1,9 +1,6 @@
 import argparse
-import json
-import os
-import shutil
 
-from pkg import build, constants, install, list, uninstall, utils
+from pkg import build, constants, cycle, install, list, uninstall, utils
 
 
 def get_args():
@@ -17,6 +14,7 @@ def get_args():
     )
     command = parser.add_subparsers(dest='command')
     build.add_subparser_command(command)
+    cycle.add_subparser_command(command)
     install.add_subparser_command(command)
     list.add_subparser_command(command)
     uninstall.add_subparser_command(command)
@@ -28,6 +26,8 @@ def main():
     args = get_args()
     if args.command == constants.BUILD:
         build.main(args)
+    elif args.command == constants.CYCLE:
+        cycle.main(args)
     elif args.command == constants.INSTALL:
         install.main(args)
     elif args.command == constants.LIST:
