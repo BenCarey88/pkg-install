@@ -1,6 +1,9 @@
 {
     "owner": "Ben Carey",
-    "name": "pkg-install",
+    "name": "pkg",
     "version": "1.0.0",
-    "dependencies": ["six"]
+    "dependencies": [
+        "six",
+        "yaml"
+    ]
 }
