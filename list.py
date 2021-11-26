@@ -2,6 +2,7 @@
 
 import json
 import os
+from collections import OrderedDict
 
 from pkg import constants, utils
 
@@ -133,7 +134,7 @@ def _get_package_build_info(directory, pkg_name):
     if not os.path.isdir(pkg_build_dir):
         return None
     details = []
-    for version in os.listdir(pkg_build_dir):
+    for version in reversed(os.listdir(pkg_build_dir)):
         pkg_version_dir = os.path.join(pkg_build_dir, version)
         if not os.path.isdir(pkg_version_dir):
             continue
@@ -145,6 +146,12 @@ def _get_package_build_info(directory, pkg_name):
         version_comment = version_info.get(version, "")
         if not version_comment and version == constants.DEFAULT_DEV_VERSION:
             version_comment = constants.DEFAULT_DEV_COMMENT
+        # allow multiple comments, and only display top one
+        if isinstance(version_comment, (list, tuple)):
+            version_comment = next(iter(version_comment), "")
+        # allow header with subcomments and only display header
+        if isinstance(version_comment, (dict, OrderedDict)):
+            version_comment = next(iter(version_comment.keys()), "")
         version_comment = "  " + version_comment
         details.append((
             version,
