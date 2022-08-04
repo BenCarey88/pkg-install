@@ -1,6 +1,5 @@
 """pkg-uninstall command."""
 
-import json
 import os
 import shutil
 
@@ -26,7 +25,7 @@ def add_subparser_command(subparser):
     uninstall_command.add_argument(
         "-f",
         action="store_true",
-        help="force install (don't ask for confirmation)",
+        help="force uninstall (don't ask for confirmation)",
     )
     uninstall_command.add_argument(
         "-d",
@@ -43,10 +42,10 @@ def main(args):
     """
     if args.d:
         pkgs_dir = constants.DEV_PKGS_DIR
-        success_message = "Package Uninstalled Successfully"
+        success_message = "Dev Package Uninstalled Successfully"
     else:
         pkgs_dir = constants.PKGS_DIR
-        success_message = "Dev Package Uninstalled Successfully"
+        success_message = "Package Uninstalled Successfully"
 
     pkg_path = os.path.join(pkgs_dir, args.pkg_name)
     pkg_info_file = utils.get_package_info_file(pkg_path)

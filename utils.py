@@ -47,7 +47,7 @@ def get_package_info_file(package_dir):
         package_dir (str): directory of package.
 
     Returns:
-        (str): path of paackage-info file.
+        (str): path of package-info file.
     """
     return os.path.join(package_dir, constants.PKG_INFO_FILE_NAME)
 

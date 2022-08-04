@@ -1,4 +1,7 @@
 
+1.2.0:
+    added unbuild and query commands
+
 1.1.1:
     - allow list and dict values in version-info
     - reverse order of builds displayed in pkg-list
