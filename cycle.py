@@ -76,6 +76,6 @@ def main(args):
 
     build_success = build.run_build(version, args.d, args.f)
     if build_success:
-        install.run_install(pkg_name, version, args.d, args.f)
+        install.run_install(pkg_name, version, args.d, args.d, args.f)
     else:
         utils.print_error("Build failed - aborting.")
