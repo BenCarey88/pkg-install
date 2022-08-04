@@ -1,6 +1,16 @@
 import argparse
 
-from pkg import build, constants, cycle, install, list, uninstall, utils
+from pkg import (
+    build,
+    constants,
+    cycle,
+    install,
+    list,
+    query,
+    unbuild,
+    uninstall,
+    utils,
+)
 
 
 def get_args():
@@ -17,6 +27,8 @@ def get_args():
     cycle.add_subparser_command(command)
     install.add_subparser_command(command)
     list.add_subparser_command(command)
+    query.add_subparser_command(command)
+    unbuild.add_subparser_command(command)
     uninstall.add_subparser_command(command)
     return parser.parse_args()
 
@@ -32,6 +44,10 @@ def main():
         install.main(args)
     elif args.command == constants.LIST:
         list.main(args)
+    elif args.command == constants.QUERY:
+        query.main(args)
+    elif args.command == constants.UNBUILD:
+        unbuild.main(args)
     elif args.command == constants.UNINSTALL:
         uninstall.main(args)
     elif args.command == "":

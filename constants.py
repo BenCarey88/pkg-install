@@ -7,6 +7,8 @@ BUILD = "build"
 CYCLE = "cycle"
 INSTALL = "install"
 LIST = "list"
+QUERY = "query"
+UNBUILD = "unbuild"
 UNINSTALL = "uninstall"
 
 # directories

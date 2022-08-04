@@ -1,4 +1,4 @@
-"""pkg-install command."""
+"""pkg-build command."""
 
 from datetime import datetime
 import json
@@ -14,7 +14,7 @@ def add_subparser_command(subparser):
         subparser (argparse.Parser): argparse object.
     """
     build_command = subparser.add_parser(
-        constants.CYCLE,
+        constants.BUILD,
         help="build and install a package",
     )
 
