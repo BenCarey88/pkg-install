@@ -39,23 +39,33 @@ def add_subparser_command(subparser):
         action="store_true",
         help="install to develop mode",
     )
+    install_command.add_argument(
+        "-pd",
+        action="store_true",
+        help="install to develop mode, but using pkg builds",
+    )
 
 
-def run_install(pkg_name, version, dev_mode, force):
+def run_install(pkg_name, version, dev_builds, dev_installs, force):
     """Run build action.
 
     Args:
         pkg_name (str): name of package to build.
         version (str): version to build.
-        dev_mode (bool): whether or not to build in dev-builds directory.
+        dev_builds (bool): whether or not to get builds from dev-builds
+            directory.
+        dev_installs (bool): whether or not to install to dev directory.
         force (bool): if True, don't ask for confirmation when rewriting.
     """
-    if dev_mode:
+    if dev_builds:
         build_dir = constants.DEV_PKG_BUILDS_DIR
+    else:
+        build_dir = constants.PKG_BUILDS_DIR
+
+    if dev_installs:
         pkgs_dir = constants.DEV_PKGS_DIR
         success_message = "Dev Package Installed Successfully"
     else:
-        build_dir = constants.PKG_BUILDS_DIR
         pkgs_dir = constants.PKGS_DIR
         success_message = "Package Installed Successfully"
 
@@ -88,7 +98,7 @@ def run_install(pkg_name, version, dev_mode, force):
         dest_dir,
         pkg_name,
         pkg_info.get(constants.IGNORE_PATTERNS_KEY, []),
-        dev_mode,
+        dev_installs,
         force,
     )
     if not success:
@@ -108,4 +118,12 @@ def main(args):
     Args:
         args (argparse.Namespace): arguments from commandline.
     """
-    run_install(args.pkg_name, args.version, args.d, args.f)
+    dev_builds = args.d and not args.pd
+    dev_installs = args.d or args.pd
+    run_install(
+        args.pkg_name,
+        args.version,
+        dev_builds,
+        dev_installs,
+        args.f,
+    )

@@ -1,4 +1,7 @@
 
+1.2.1:
+    option to install non-dev pkg builds to dev mode
+
 1.2.0:
     added unbuild and query commands
 
