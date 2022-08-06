@@ -13,7 +13,7 @@ def add_subparser_command(subparser):
     """
     query_command = subparser.add_parser(
         constants.QUERY,
-        help="list packages",
+        help="query info about packages",
     )
     query_command.add_argument(
         "pkg_name",
@@ -23,7 +23,7 @@ def add_subparser_command(subparser):
     query_command.add_argument(
         "-v",
         action="store_true",
-        help="Query version of develop installs",
+        help="Query version of installs",
     )
     query_command.add_argument(
         "-d",

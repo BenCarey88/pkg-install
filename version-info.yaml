@@ -1,4 +1,7 @@
 
+1.2.2:
+    fixed help messages for pkg query command
+
 1.2.1:
     option to install non-dev pkg builds to dev mode
 
