@@ -15,7 +15,7 @@ def add_subparser_command(subparser):
     """
     build_command = subparser.add_parser(
         constants.BUILD,
-        help="build and install a package",
+        help="build a package",
     )
 
     build_command.add_argument(

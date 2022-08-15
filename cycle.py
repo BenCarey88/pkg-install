@@ -13,7 +13,7 @@ def add_subparser_command(subparser):
     """
     cycle_command = subparser.add_parser(
         constants.CYCLE,
-        help="build a package",
+        help="build and install a package",
     )
 
     cycle_command.add_argument(
