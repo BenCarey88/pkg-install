@@ -99,5 +99,5 @@ def main(args):
         print ("Aborting.")
         return
 
-    shutil.rmtree(pkg_version_dir)
+    shutil.rmtree(pkg_version_dir, onerror=utils.on_rmtree_error)
     print (success_message)

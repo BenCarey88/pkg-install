@@ -82,7 +82,7 @@ def run_build(version, dev_mode, force):
     else:
         build_dir = constants.PKG_BUILDS_DIR
         success_message = "Package Built Successfully"
-    
+
     src_dir = os.path.abspath(os.getcwd())
     pkg_info_file, pkg_info = utils.get_package_info(src_dir)
     if not pkg_info:
