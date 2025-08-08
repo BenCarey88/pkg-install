@@ -4,21 +4,27 @@ import json
 import os
 import six
 import shutil
+import stat
 import yaml
 
 from pkg import constants
 
 
+class PkgError(Exception):
+    """Exception class for any package errors."""
+
+
 def prompt_user_confirmation(
         message,
-        confirmation_chars=['y', ''],
-        accepted_chars=['y','n', '']):
+        confirmation_chars=('y', ''),
+        accepted_chars=('y','n', '')):
     """Prompt user confirmation.
 
     Args:
         message (str): message to give user.
-        confirmation_char (list(str)): characters that signal confirmation.
-        accepted_chars (list(str)): characters required before user can continue.
+        confirmation_char (tuple(str)): characters that signal confirmation.
+        accepted_chars (tuple(str)): characters required before user can
+            continue.
 
     Returns:
         (bool): whether or not user has confirmed.
@@ -38,6 +44,16 @@ def print_error(message, *format_args):
         format_args (list(str)): additional args to pass to format function.
     """
     print ("[ERROR] " + message.format(*format_args))
+
+
+def raise_error(message, *format_args):
+    """Raise error in console.
+
+    Args:
+        message (str): error message to print.
+        format_args (list(str)): additional args to pass to format function.
+    """
+    raise PkgError(message.format(*format_args))
 
 
 def get_package_info_file(package_dir):
@@ -158,7 +174,7 @@ def copy_package_directory(
             print ("Aborting.")
             return False
         else:
-            shutil.rmtree(dest_dir)
+            shutil.rmtree(dest_dir, onerror=on_rmtree_error)
 
     shutil.copytree(
         src_dir,
@@ -171,3 +187,10 @@ def copy_package_directory(
         )
     )
     return True
+
+
+def on_rmtree_error(func, path, exc_info):
+    """Function to call is shutil.rmtree errors."""
+    # path contains the path of the file that couldn't be removed
+    os.chmod(path, stat.S_IWRITE)
+    func(path)

@@ -48,5 +48,7 @@ def main(args):
     pkgs_dir = constants.DEV_PKGS_DIR if args.d else constants.PKGS_DIR
     pkg_dir = os.path.join(pkgs_dir, args.pkg_name)
     _, pkg_info = utils.get_package_info(pkg_dir)
+    if pkg_info is None:
+        return
     if args.v:
         print (pkg_info.get(constants.VERSION_KEY))

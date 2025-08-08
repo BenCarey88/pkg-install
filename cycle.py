@@ -69,7 +69,7 @@ def main(args):
     version = args.version or build.get_build_version(
         pkg_info,
         pkg_info_file,
-        args.d
+        args.d,
     )
     if not version:
         return

@@ -22,7 +22,7 @@ def get_args():
     parser = argparse.ArgumentParser(
         description='Package development'
     )
-    command = parser.add_subparsers(dest='command')
+    command = parser.add_subparsers(dest='command', required=True)
     build.add_subparser_command(command)
     cycle.add_subparser_command(command)
     install.add_subparser_command(command)
@@ -50,7 +50,7 @@ def main():
         unbuild.main(args)
     elif args.command == constants.UNINSTALL:
         uninstall.main(args)
-    elif args.command == "":
+    elif not args.command:
         utils.print_error("No subcommand given to 'pkg' command")
     else:
         utils.print_error("pkg subcommand {0} not recognised", args.command)
