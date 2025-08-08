@@ -1,3 +1,6 @@
+1.2.3:
+    - fixed rmtree read-only error
+    - switched help messages for build and cycle cmds
 
 1.2.2:
     fixed help messages for pkg query command
